@@ -38,6 +38,8 @@ def main():
     ticker = ticker_df[TICKERCOL].str.strip().dropna().tolist()
     faulty_tickers = []
     
+    unique_fx_rates = ticker_df[FXCOL].str.strip().dropna().unique().tolist()
+    
     for t in ticker:
         # Files cannot be named CON under Windows
         if t == "CON":

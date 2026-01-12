@@ -2,7 +2,6 @@
 import pandas as pd
 import yfinance as yf
 from datetime import datetime, timedelta
-import os
 from pathlib import Path
 from src.utils.utils_os import check_directory, remove_files
 from src.config.download import YEARS, FX, FILE, TICKERCOL, FXCOL
@@ -40,11 +39,13 @@ def main():
     
     unique_fx_rates = ticker_df[FXCOL].str.strip().dropna().unique().tolist()
     for fx in unique_fx_rates:
+        if fx == FX:
+            continue  # No need to download if same as base currency
         try:
             fx_data = yf_download(f"{fx}{FX}=X", YEARS)
             if fx_data is not None and len(fx_data) > 0:
-                fx_data.to_parquet(FX_DIR / f"{fx}.parquet")
-                print(f"Downloaded FX rate for {fx}")
+                fx_data.to_parquet(FX_DIR / f"{fx}{FX}.parquet")
+                print(f"Downloaded FX rate for {fx}{FX}")
             else:
                 print(f"Failed to download FX rate for {fx}")
         except Exception as e:

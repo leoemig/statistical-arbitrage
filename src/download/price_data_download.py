@@ -39,6 +39,16 @@ def main():
     faulty_tickers = []
     
     unique_fx_rates = ticker_df[FXCOL].str.strip().dropna().unique().tolist()
+    for fx in unique_fx_rates:
+        try:
+            fx_data = yf_download(f"{fx}{FX}=X", YEARS)
+            if fx_data is not None and len(fx_data) > 0:
+                fx_data.to_parquet(FX_DIR / f"{fx}.parquet")
+                print(f"Downloaded FX rate for {fx}")
+            else:
+                print(f"Failed to download FX rate for {fx}")
+        except Exception as e:
+            print(f"Error downloading FX rate for {fx}: {e}")
     
     for t in ticker:
         # Files cannot be named CON under Windows
